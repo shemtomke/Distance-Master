@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -89,6 +90,7 @@ public class LoadImages : MonoBehaviour
         if (index >= 0 && index < sprites.Count)
         {
             Sprite sprite = sprites[index];
+            selectedImage.gameObject.SetActive(true);
             selectedImage.sprite = sprite;
             isLoaded = true;
 

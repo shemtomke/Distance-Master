@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MarkerHandler : MonoBehaviour
@@ -70,11 +71,18 @@ public class MarkerHandler : MonoBehaviour
 
     public void ResetMarkPoints()
     {
-        DestroyMarkers();
-        lineRenderer.gameObject.SetActive(false);
-        isPoint1Marked = false;
-        isPoint2Marked = false;
-        isSelected = true;
+        //DestroyMarkers();
+        //loadImages.selectedImage.gameObject.SetActive(false);
+        //lineRenderer.gameObject.SetActive(false);
+        //isPoint1Marked = false;
+        //isPoint2Marked = false;
+        //isSelected = true;
+
+        // Get the current scene index
+        int currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
+
+        // Reload the current scene
+        SceneManager.LoadScene(currentSceneIndex);
     }
 
     public float MeasureDistance(Vector3 p1, Vector3 p2)
