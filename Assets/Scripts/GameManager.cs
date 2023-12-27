@@ -4,15 +4,7 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    // Implement varying time limits for different difficulty levels (Easy, Medium, Hard), with a customizable option for 'Custom'.
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+
 }
