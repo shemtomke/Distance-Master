@@ -8,6 +8,8 @@ using UnityEngine.UI;
 
 public class LoadImages : MonoBehaviour
 {
+    public string imagesUrlPath = "";
+
     // Load all images from three paths
     [Header("Paths")]
     public string easyPath;
@@ -116,6 +118,9 @@ public class LoadImages : MonoBehaviour
     // Load from Google drive
     public void LoadUrlImage()
     {
+        // cut the string 
 
     }
+    // load images from all data from the table (Url) download
+
 }

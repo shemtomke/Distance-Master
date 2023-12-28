@@ -6,7 +6,7 @@ using UnityEngine;
 public class UserManager : MonoBehaviour
 {
     string fileName = "";
-    public List<UserAccount> userAccounts = new List<UserAccount>();
+    public List<UserDetails> userDetails = new List<UserDetails>();
 
     private void Start()
     {
@@ -33,29 +33,19 @@ public class UserManager : MonoBehaviour
     // Local Data Access: Ensure you can access the gameplay data of all users locally.
     public void WriteCSV()
     {
-        if(userAccounts.Count > 0)
+        if(userDetails.Count > 0)
         {
             TextWriter tw = new StreamWriter(fileName, false);
-            tw.WriteLine("Username, DistanceMeasured, TimeTaken, UserDescription");
+            tw.WriteLine("Username, DistanceMeasured, TimeTaken, DifficultyLevel");
             tw.Close();
 
             tw = new StreamWriter(fileName, true);
-            for (int i = 0; i < userAccounts.Count; i++)
+            for (int i = 0; i < userDetails.Count; i++)
             {
-                tw.WriteLine(userAccounts[i].username + "," + userAccounts[i].distanceMeasured + "," +
-                    userAccounts[i].timeTaken + "," + userAccounts[i].userDescription);
+                tw.WriteLine(userDetails[i].userName + "," + userDetails[i].distanceMeasured + "," +
+                    userDetails[i].timeTaken + "," + userDetails[i].difficultyLevel);
             }
             tw.Close();
         }
     }
 }
-[System.Serializable]
-public class UserAccount
-{
-    public string username;
-    public string password;
-    public float distanceMeasured;
-    public float timeTaken;
-    public string userDescription;
-}
-

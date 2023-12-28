@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine.UI;
 
 public class MarkerHandler : MonoBehaviour
 {
+    public MeasurementUnits currentUnit = MeasurementUnits.Meter;
     public Vector3 point1, point2;
     public GameObject markerPrefab;
     public Text distanceTxt;
@@ -14,6 +16,8 @@ public class MarkerHandler : MonoBehaviour
     List<GameObject> markers = new List<GameObject>();
     bool isPoint1Marked = false, isPoint2Marked = false;
     bool isSelected = true;
+
+    float distance;
 
     private Camera mainCamera;
 
@@ -84,7 +88,16 @@ public class MarkerHandler : MonoBehaviour
         // Reload the current scene
         SceneManager.LoadScene(currentSceneIndex);
     }
+    // erasing line
+    public void EraseLine()
+    {
 
+    }
+    // redoing the line
+    public void Redo()
+    {
+
+    }
     public float MeasureDistance(Vector3 p1, Vector3 p2)
     {
         return Vector3.Distance(p1, p2);
@@ -99,8 +112,8 @@ public class MarkerHandler : MonoBehaviour
             lineRenderer.SetPosition(0, point1);
             lineRenderer.SetPosition(1, point2);
 
-            float distance = MeasureDistance(point1, point2);
-            distanceTxt.text = distance + " Metres";
+            distance = MeasureDistance(point1, point2);
+            distanceTxt.text = distance + " " + currentUnit.ToString();
         }
     }
     public void DestroyMarkers()
@@ -109,5 +122,25 @@ public class MarkerHandler : MonoBehaviour
         {
             Destroy(markers[i]);
         }
+    }
+    // cm, mm, km - changing measurement
+    public void ConvertCm()
+    {
+        currentUnit = MeasurementUnits.Centimeter;
+        distance *= 100;
+    }
+    public void ConvertMetre()
+    {
+        currentUnit = MeasurementUnits.Meter;
+    }
+    public void ConvertKm()
+    {
+        currentUnit = MeasurementUnits.Kilometre;
+        distance /= 1000;
+    }
+    public void ConvertMm()
+    {
+        currentUnit = MeasurementUnits.Millimetre;
+        distance *= 1000;
     }
 }
