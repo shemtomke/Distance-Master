@@ -53,10 +53,9 @@ public class UserManager : MonoBehaviour
 public class UserAccount
 {
     public string username;
+    public string password;
     public float distanceMeasured;
     public float timeTaken;
     public string userDescription;
-
-    // Additional properties or methods as needed
 }
 

@@ -113,4 +113,9 @@ public class LoadImages : MonoBehaviour
 
         return sprite;
     }
+    // Load from Google drive
+    public void LoadUrlImage()
+    {
+
+    }
 }
