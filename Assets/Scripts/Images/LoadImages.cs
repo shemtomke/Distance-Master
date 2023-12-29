@@ -4,11 +4,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Networking;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class LoadImages : MonoBehaviour
 {
+    public string downloadUrl = "https://drive.google.com/uc?export=download&id="; // download url + image cut url
     public string imagesUrlPath = "";
+    public string jsonUrlPath;
 
     // Load all images from three paths
     [Header("Paths")]
@@ -27,6 +31,8 @@ public class LoadImages : MonoBehaviour
     private List<Sprite> sprites = new List<Sprite>();
 
     public bool isLoaded = false;
+
+    QuestionManager questionManager;
     void Start()
     {
         // Set up the dropdown options
@@ -116,11 +122,73 @@ public class LoadImages : MonoBehaviour
         return sprite;
     }
     // Load from Google drive
-    public void LoadUrlImage()
+    // cut the string from where
+    string CutImageUrl(string imageUrl)
     {
-        // cut the string 
+        // Find the index of "file/d/" in the URL
+        int startIndex = imageUrl.IndexOf("file/d/") + "file/d/".Length;
+
+        // Find the index of "/view" in the URL
+        int endIndex = imageUrl.IndexOf("/view");
+
+        // Extract the substring between startIndex and endIndex
+        string extractedString = imageUrl.Substring(startIndex, endIndex - startIndex);
+
+        return extractedString;
+    }
+    public void FetchImagesUrl(string pathUrl)
+    {
+        List<string> images = new List<string>();
+
+        // get all total amount of files in the path file of the google drive
 
     }
-    // load images from all data from the table (Url) download
+    // add the pictures to the json file 
+    IEnumerator GetData(string url)
+    {
+        UnityWebRequest request = UnityWebRequest.Get(url);
 
+        yield return request.SendWebRequest();
+
+        if (request.isNetworkError || request.isHttpError)
+        {
+            // error ...
+
+        }
+        else
+        {
+            // success...
+            ImageQuestionData data = JsonUtility.FromJson<ImageQuestionData>(request.downloadHandler.text);
+
+            // print data in UI
+            //uiNameText.text = data.Name;
+
+            // Load image:
+            StartCoroutine(GetImage(data.imageUrl));
+        }
+
+        // Clean up any resources it is using.
+        request.Dispose();
+    }
+
+    IEnumerator GetImage(string url)
+    {
+        UnityWebRequest request = UnityWebRequest.Get(url);
+
+        yield return request.SendWebRequest();
+
+        if (request.isNetworkError || request.isHttpError)
+        {
+            // error ...
+
+        }
+        else
+        {
+            //success...
+            //uiRawImage.texture = ((DownloadHandlerTexture)request.downloadHandler).texture;
+        }
+
+        // Clean up any resources it is using.
+        request.Dispose();
+    }
 }

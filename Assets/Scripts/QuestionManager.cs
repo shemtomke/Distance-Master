@@ -36,7 +36,7 @@ public class QuestionManager : MonoBehaviour
     {
         if (currentQuestionIndex >= 0 && currentQuestionIndex < imageQuestions.Count)
         {
-            questionTextUI.text = imageQuestions[currentSelectedImage].questions[currentQuestionIndex].question;
+            questionTextUI.text = imageQuestions[currentSelectedImage].questions[currentQuestionIndex];
         }
     }
 }

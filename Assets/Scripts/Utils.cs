@@ -9,7 +9,7 @@ public enum MeasurementUnits
 {
     Millimetre, Centimeter, Kilometre, Meter
 }
-public enum Dififculty
+public enum Difficulty
 {
     Easy, Medium, Hard, Custom
 }
