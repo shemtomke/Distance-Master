@@ -9,6 +9,7 @@ using static UnityEditor.VersionControl.Message;
 using System;
 using Unity.VisualScripting;
 
+// Allow to upload images from a button (Access your Computer Directory)
 public class FileExplorerImage : MonoBehaviour
 {
     public RawImage rawImage;

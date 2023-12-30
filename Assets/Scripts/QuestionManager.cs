@@ -5,20 +5,24 @@ using UnityEngine.UI;
 
 public class QuestionManager : MonoBehaviour
 {
-    public List<ImageQuestionData> imageQuestions = new List<ImageQuestionData>();
+    public QuestionDataWrapper questionDataWrapper = new QuestionDataWrapper();
     public Text questionTextUI;
 
-    private int currentQuestionIndex = 0;
+    public int currentQuestionIndex = 0;
     public int currentSelectedImage = 0; // When we select from the drop down
 
     void Start()
     {
         DisplayCurrentQuestion();
     }
+    private void Update()
+    {
+        DisplayCurrentQuestion();
+    }
 
     public void NextQuestion()
     {
-        if (currentQuestionIndex < imageQuestions.Count - 1)
+        if (currentQuestionIndex < questionDataWrapper.questions.Count)
         {
             currentQuestionIndex++;
             DisplayCurrentQuestion();
@@ -34,9 +38,9 @@ public class QuestionManager : MonoBehaviour
     }
     private void DisplayCurrentQuestion()
     {
-        if (currentQuestionIndex >= 0 && currentQuestionIndex < imageQuestions.Count)
+        if (currentQuestionIndex >= 0 && currentQuestionIndex < questionDataWrapper.questions.Count)
         {
-            questionTextUI.text = imageQuestions[currentSelectedImage].questions[currentQuestionIndex];
+            questionTextUI.text = questionDataWrapper.questions[currentSelectedImage].questions[currentQuestionIndex];
         }
     }
 }
