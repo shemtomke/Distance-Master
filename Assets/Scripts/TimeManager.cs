@@ -5,9 +5,12 @@ using UnityEngine.UI;
 
 public class TimeManager : MonoBehaviour
 {
+    public GameObject customTimerUI;
+    public InputField customInputField;
+
+    public string timeTaken;
     public float timer;
     public Text timerText;
-    public Text customTimeText;
 
     [Header("Timer")]
     public float easyTimer;
@@ -16,10 +19,14 @@ public class TimeManager : MonoBehaviour
     public float customTimer;
 
     GameManager gameManager;
-
+    LoadImages loadImages;
+    QuestionManager questionManager;
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        loadImages = FindObjectOfType<LoadImages>();
+        questionManager = FindObjectOfType<QuestionManager>();
+
         GetTimer(gameManager.currentDifficulty);
     }
     private void Update()
@@ -46,7 +53,20 @@ public class TimeManager : MonoBehaviour
                 break;
         }
     }
-
+    public void GetCurrentTime()
+    {
+        GetTimer(gameManager.currentDifficulty);
+    }
+    public void CustomTime()
+    {
+        customTimer = float.Parse(customInputField.text);
+        gameManager.currentDifficulty = Difficulty.Custom;
+        GetCurrentTime();
+        loadImages.itemImageUI.SetActive(true);
+        gameManager.isStart = true;
+        loadImages.isLoaded = true;
+        questionManager.questionSetUI.SetActive(false);
+    }
     void TimeLapse()
     {
         if (!gameManager.isStart)
@@ -74,5 +94,13 @@ public class TimeManager : MonoBehaviour
 
         // Update the UI text
         timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+    }
+    public void SaveTime()
+    {
+        timeTaken = timerText.text.ToString();
+    }
+    public void ResetTimer() //After Submitting
+    {
+        timer = 0;
     }
 }

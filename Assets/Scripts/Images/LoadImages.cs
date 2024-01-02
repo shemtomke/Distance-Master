@@ -10,6 +10,8 @@ using UnityEngine.UI;
 
 public class LoadImages : MonoBehaviour
 {
+    public GameObject itemImageUI;
+    public GameObject chooseImageUI;
     public Dropdown imageDropdown;
     public Image selectedImage; // Use Image component for displaying sprites
 
@@ -18,18 +20,18 @@ public class LoadImages : MonoBehaviour
     public bool isLoaded = false;
 
     QuestionManager questionManager;
+    GameManager gameManager;
+    TimeManager timeManager;
     void Start()
     {
+        gameManager = FindObjectOfType<GameManager>();
         questionManager = FindObjectOfType<QuestionManager>();
+        timeManager = FindObjectOfType<TimeManager>();
+
+        PopulateDropdown();
 
         // Add listener to the dropdown change event
         imageDropdown.onValueChanged.AddListener(OnDropdownValueChanged);
-    }
-    private void OnEnable()
-    {
-        questionManager = FindObjectOfType<QuestionManager>();
-
-        PopulateDropdown();
     }
     public void PopulateDropdown()
     {
@@ -56,7 +58,6 @@ public class LoadImages : MonoBehaviour
             return;
         }
 
-        // Iterate through all difficulty paths
         for (int i = 0; i < questionManager.questionDataWrapper.questions.Count; i++)
         {
             var img = questionManager.questionDataWrapper.questions[i];
@@ -82,6 +83,25 @@ public class LoadImages : MonoBehaviour
     {
         // Load the selected image when the dropdown value changes
         LoadImage(index);
+        questionManager.currentSelectedImage = index;
+        var difficultyEnumString = questionManager.questionDataWrapper.questions[index].difficulty;
+
+        if (Enum.TryParse(difficultyEnumString, out Difficulty parsedDifficulty))
+        {
+            // Parsing successful, assign the parsed enum value to gameManager.currentDifficulty
+            gameManager.currentDifficulty = parsedDifficulty; 
+        }
+        else
+        {
+            // Parsing failed, handle the error or provide a default value
+            Debug.LogError("Failed to parse difficulty enum from string: " + difficultyEnumString);
+        }
+
+        timeManager.GetCurrentTime();
+        itemImageUI.SetActive(true);
+        questionManager.questionSetUI.SetActive(true);
+        chooseImageUI.SetActive(false);
+        gameManager.isStart = true;
     }
     public void LoadImage(int index)
     {
@@ -89,13 +109,16 @@ public class LoadImages : MonoBehaviour
         if (index >= 0 && index < sprites.Count)
         {
             Sprite sprite = sprites[index];
-            selectedImage.gameObject.SetActive(true);
             selectedImage.sprite = sprite;
             isLoaded = true;
 
             if (isLoaded)
             {
                 imageDropdown.gameObject.SetActive(false);
+            }
+            else
+            {
+                imageDropdown.gameObject.SetActive(true);
             }
         }
     }

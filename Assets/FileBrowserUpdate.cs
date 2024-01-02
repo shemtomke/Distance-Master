@@ -1,16 +1,19 @@
-﻿
-using AnotherFileBrowser.Windows;
+﻿using AnotherFileBrowser.Windows;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
-using UnityEngine.UI;
 
 public class FileBrowserUpdate : MonoBehaviour
 {
-    public RawImage rawImage;
-
+    LoadImages loadImages;
+    TimeManager timeManager;
+    GameManager gameManager;
+    private void Start()
+    {
+        loadImages = FindObjectOfType<LoadImages>();
+        timeManager = FindObjectOfType<TimeManager>();
+        gameManager = FindObjectOfType<GameManager>();
+    }
     public void OpenFileBrowser()
     {
         var bp = new BrowserProperties();
@@ -37,7 +40,15 @@ public class FileBrowserUpdate : MonoBehaviour
             else
             {
                 var uwrTexture = DownloadHandlerTexture.GetContent(uwr);
-                rawImage.texture = uwrTexture;
+                if (uwrTexture != null)
+                {
+                    var sprite = Sprite.Create(uwrTexture, new Rect(0, 0, uwrTexture.width, uwrTexture.height), Vector2.zero);
+                    gameManager.Notification("Successfully Uploaded Image!", Color.green);
+                    // Assign the created sprite back to the sprite variable
+                    loadImages.selectedImage.sprite = sprite;
+                    loadImages.chooseImageUI.SetActive(false);
+                    timeManager.customTimerUI.SetActive(true);
+                }
             }
         }
     }

@@ -5,9 +5,6 @@ using AnotherFileBrowser;
 using AnotherFileBrowser.Windows;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using static UnityEditor.VersionControl.Message;
-using System;
-using Unity.VisualScripting;
 
 // Allow to upload images from a button (Access your Computer Directory)
 public class FileExplorerImage : MonoBehaviour

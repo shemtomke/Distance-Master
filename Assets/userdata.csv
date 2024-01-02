@@ -1,3 +1,2 @@
-Username, DistanceMeasured, TimeTaken, UserDescription
-shemtom,2,5,none
-manu,45,20,here
+Username, DistanceMeasured, TimeTaken, DifficultyLevel
+tom,5.497116 Meter,00:00,Custom

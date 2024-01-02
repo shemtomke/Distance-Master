@@ -6,11 +6,11 @@ using UnityEngine.UI;
 public class QuestionManager : MonoBehaviour
 {
     public QuestionDataWrapper questionDataWrapper = new QuestionDataWrapper();
+    public GameObject questionSetUI;
     public Text questionTextUI;
 
     public int currentQuestionIndex = 0;
-    public int currentSelectedImage = 0; // When we select from the drop down
-
+    public int currentSelectedImage = -1; // When we select from the drop down
     void Start()
     {
         DisplayCurrentQuestion();
@@ -22,10 +22,9 @@ public class QuestionManager : MonoBehaviour
 
     public void NextQuestion()
     {
-        if (currentQuestionIndex < questionDataWrapper.questions.Count)
+        if (currentQuestionIndex < questionDataWrapper.questions[currentSelectedImage].questions.Count - 1)
         {
             currentQuestionIndex++;
-            DisplayCurrentQuestion();
         }
     }
     public void PreviousQuestion()
@@ -33,14 +32,19 @@ public class QuestionManager : MonoBehaviour
         if (currentQuestionIndex > 0)
         {
             currentQuestionIndex--;
-            DisplayCurrentQuestion();
         }
     }
     private void DisplayCurrentQuestion()
     {
-        if (currentQuestionIndex >= 0 && currentQuestionIndex < questionDataWrapper.questions.Count)
-        {
-            questionTextUI.text = questionDataWrapper.questions[currentSelectedImage].questions[currentQuestionIndex];
-        }
+        if (questionDataWrapper.questions == null || currentSelectedImage < 0 || currentSelectedImage >= questionDataWrapper.questions.Count)
+            return;
+
+        var selectedImageQuestions = questionDataWrapper.questions[currentSelectedImage];
+
+        if (selectedImageQuestions.questions == null || currentQuestionIndex < 0 || currentQuestionIndex >= selectedImageQuestions.questions.Count)
+            return;
+
+        // At this point, both the selected image and current question index are within valid ranges
+        questionTextUI.text = selectedImageQuestions.questions[currentQuestionIndex];
     }
 }
