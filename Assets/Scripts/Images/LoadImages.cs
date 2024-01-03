@@ -15,7 +15,7 @@ public class LoadImages : MonoBehaviour
     public Dropdown imageDropdown;
     public Image selectedImage; // Use Image component for displaying sprites
 
-    private List<Sprite> sprites = new List<Sprite>();
+    private List<Sprite> sprites = new List<Sprite>(); //Fetched images are stored here and parsed to the dropdown
 
     public bool isLoaded = false;
 

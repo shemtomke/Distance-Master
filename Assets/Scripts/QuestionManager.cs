@@ -10,7 +10,7 @@ public class QuestionManager : MonoBehaviour
     public Text questionTextUI;
 
     public int currentQuestionIndex = 0;
-    public int currentSelectedImage = -1; // When we select from the drop down
+    public int currentSelectedImage = -1; // When we select an image from the drop down
     void Start()
     {
         DisplayCurrentQuestion();

@@ -2,6 +2,7 @@ using Firebase.Database;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,22 +14,23 @@ public class DbManager : MonoBehaviour
     DatabaseReference dbReference;
     UserManager userManager;
     QuestionManager questionManager;
-    LoadImages loadImages;
     private void Awake()
     {
         userManager = FindObjectOfType<UserManager>();
         questionManager = FindObjectOfType<QuestionManager>();
-        loadImages = FindObjectOfType<LoadImages>();
 
         id = PlayerPrefs.GetInt("LastUserId", 0);
         userDetailsId = PlayerPrefs.GetInt("LastUserDetailsId", 0);
 
         userID = SystemInfo.deviceUniqueIdentifier;
+
+        // Allow Offline Realtime Database
         FirebaseDatabase.DefaultInstance.SetPersistenceEnabled(true);
         dbReference = FirebaseDatabase.DefaultInstance.RootReference;
 
-        FetchAndUpdateUserWrapperData();
-        FetchAndUpdateImagesData();
+        FetchAndUpdateUserWrapperData(); //Logins & Sign Up
+        FetchAndUpdateImagesData(); //Images
+        FetchAndUpdateUserData(); // User Statistics
     }
 
     #region Images
@@ -178,7 +180,7 @@ public class DbManager : MonoBehaviour
     }
     #endregion
 
-    #region User Data
+    #region User Statistics Data
     public void CreateUserData(UserDetails newUserDetails)
     {
         string json = JsonUtility.ToJson(newUserDetails);
@@ -194,6 +196,45 @@ public class DbManager : MonoBehaviour
         {
             Debug.LogError("Database reference is null. Make sure Start method is called.");
         }
+    }
+    public IEnumerator GetUsereData(Action<List<UserDetails>> onCallback)
+    {
+        var userData = dbReference.Child("userDetails").GetValueAsync();
+        yield return new WaitUntil(() => userData.IsCompleted);
+
+        if (userData.Exception != null)
+        {
+            Debug.LogError($"Error fetching all users info: {userData.Exception}");
+            yield break; // Exit the coroutine on error
+        }
+
+        DataSnapshot userDataSnapshot = userData.Result;
+
+        List<UserDetails> userDetailsList = new List<UserDetails>();
+
+        foreach (var userDataChild in userDataSnapshot.Children)
+        {
+            string userId = userDataChild.Key;
+            foreach (var id in userDataChild.Children)
+            {
+                string _id = id.Key;
+                string userName = id.Child("userName").Value.ToString();
+                string dist = id.Child("distanceMeasured").Value.ToString();
+                string timeTaken = id.Child("timeTaken").Value.ToString();
+                string difficulty = id.Child("difficultyLevel").Value.ToString();
+
+                userDetailsList.Add(new UserDetails(userName, dist, timeTaken, difficulty));
+            }
+        }
+
+        onCallback.Invoke(userDetailsList);
+    }
+    public void FetchAndUpdateUserData()
+    {
+        StartCoroutine(GetUsereData((userDetailsList) =>
+        {
+            userManager.userDetails.AddRange(userDetailsList);
+        }));
     }
     #endregion
 }

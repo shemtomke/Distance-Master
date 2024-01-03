@@ -99,7 +99,7 @@ public class TimeManager : MonoBehaviour
     {
         timeTaken = timerText.text.ToString();
     }
-    public void ResetTimer() //After Submitting
+    public void ResetTimer()
     {
         timer = 0;
     }

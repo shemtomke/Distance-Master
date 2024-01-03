@@ -9,7 +9,6 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 public class UserManager : MonoBehaviour
 {
     string fileName = "";
-    public string userJsonUrl = "";
     public string currentUserName;
     public Text usernameTxt;
 
@@ -17,18 +16,22 @@ public class UserManager : MonoBehaviour
     public UserWrapperData userWrapperData;
 
     public GameObject gameSceneUI;
-    
 
     [Header("Sign Up")]
     public GameObject signUpUI;
     public InputField usernameSignUpField;
     public InputField passwordSignUpField;
     public InputField confirmPasswordSignUpField;
+    public Toggle confirmPasswordSignUpToggle;
+    public Toggle passwordSignUpToggle;
 
     [Header("Login")]
     public GameObject loginUI;
     public InputField usernameLogInField;
     public InputField passwordLogInField;
+    public Toggle passwordLoginToggle;
+
+    private Dictionary<Toggle, InputField> toggleToInputFieldMap;
 
     DbManager dbManager;
     GameManager gameManager;
@@ -47,6 +50,19 @@ public class UserManager : MonoBehaviour
         loginUI.SetActive(true);
 
         fileName = Application.dataPath + "/userdata.csv";
+
+        toggleToInputFieldMap = new Dictionary<Toggle, InputField>
+        {
+            { confirmPasswordSignUpToggle, confirmPasswordSignUpField },
+            { passwordLoginToggle, passwordLogInField },
+            { passwordSignUpToggle, passwordSignUpField }
+        };
+
+        // Subscribe to the onValueChanged events of the toggles
+        foreach (var toggle in toggleToInputFieldMap.Keys)
+        {
+            toggle.onValueChanged.AddListener((isOn) => ShowPassword(toggle, isOn));
+        }
     }
     // Login & Sign Up
     public void SignUp()
@@ -54,29 +70,50 @@ public class UserManager : MonoBehaviour
         var username = usernameSignUpField.text;
         var password = passwordSignUpField.text;
         var confirmPassword = confirmPasswordSignUpField.text;
-        if(confirmPassword == password)
+
+        // Check if username or password is null or empty
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
         {
+            gameManager.Notification("Username or Password cannot be empty", Color.red);
+            return; // Exit the method if username or password is empty
+        }
+
+        // Check if passwords match
+        if (confirmPassword == password)
+        {
+            // Check if the user already exists
             if (!UserExists(username))
             {
                 User newUser = new User(username, password);
                 userWrapperData.users.Add(newUser);
                 dbManager.CreateUser(newUser);
                 SuccessfulLogin();
+                gameManager.Notification("Sign up successful!", Color.green);
             }
             else
             {
-                gameManager.Notification("User Exists. Try another Username!", Color.red);
+                gameManager.Notification("User already exists. Try another username!", Color.red);
             }
         }
         else
         {
-            gameManager.Notification("Password Do not Match!", Color.red);
+            gameManager.Notification("Passwords do not match!", Color.red);
         }
     }
     public void LogIn()
     {
         var username = usernameLogInField.text;
         var password = passwordLogInField.text;
+
+        // Check if username or password is null or empty
+        if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+        {
+            gameManager.Notification("Username and password cannot be empty", Color.red);
+            return; // Exit the method if username or password is empty
+        }
+
+        bool loginSuccessful = false;
+
         foreach (User user in userWrapperData.users)
         {
             if (user.userName == username && user.password == password)
@@ -84,12 +121,15 @@ public class UserManager : MonoBehaviour
                 gameManager.Notification("Login successful!", Color.green);
                 SuccessfulLogin();
                 currentUserName = user.userName;
-                usernameTxt.text = "Username : " + currentUserName;
+                usernameTxt.text = "Username: " + currentUserName;
+                loginSuccessful = true;
+                break; // Exit the loop since login is successful
             }
-            else
-            {
-                gameManager.Notification("Login unsuccessful! Incorrect password or username", Color.red);
-            }
+        }
+
+        if (!loginSuccessful)
+        {
+            gameManager.Notification("Login unsuccessful! Incorrect password or username", Color.red);
         }
     }
     
@@ -101,6 +141,20 @@ public class UserManager : MonoBehaviour
     {
         return userWrapperData.users.Exists(user => user.userName == username);
     }
+    private void ShowPassword(Toggle toggle, bool isOn)
+    {
+        if (toggleToInputFieldMap.TryGetValue(toggle, out InputField inputField))
+        {
+            inputField.contentType = isOn ? InputField.ContentType.Standard : InputField.ContentType.Password;
+            string currentText = inputField.text;
+            inputField.text = "";
+            inputField.text = currentText;
+        }
+        else
+        {
+            Debug.LogError("Toggle not found in the map!");
+        }
+    }
     void SuccessfulLogin()
     {
         loadImages.PopulateDropdown();
@@ -109,6 +163,7 @@ public class UserManager : MonoBehaviour
         gameSceneUI.SetActive(true);
         loadImages.chooseImageUI.SetActive(true);
     }
+    // Submit Button
     public void SubmitUserDetails()
     {
         timeManager.SaveTime();
@@ -122,12 +177,11 @@ public class UserManager : MonoBehaviour
         dbManager.CreateUserData(newUserDetails);
         WriteCSV();
         gameManager.TakeScreenShot();
-        loadImages.isLoaded = false;
 
-        // Reset Game to Choose Image Page UI
-        gameManager.ResetToChooseImage();
+        // Uncomment below to Reset Game to Choose Image Page UI
+        //gameManager.ResetToChooseImage();
     }
-    // Local Data Access: Ensure you can access the gameplay data of the current user locally
+    // Local Data Access: Ensure you can access the gameplay data of the current user locally (Csv)
     public void WriteCSV()
     {
         if(userDetails.Count > 0)

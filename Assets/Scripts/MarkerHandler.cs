@@ -17,9 +17,7 @@ public class MarkerHandler : MonoBehaviour
 
     public Button undoBtn, clearBtn;
 
-    List<GameObject> markers = new List<GameObject>();
-
-    Vector2 secondPoint;
+    List<GameObject> markers = new List<GameObject>(); // Mark Points
 
     bool isPoint1Marked = false, isPoint2Marked = false;
     bool isSelected = true;
@@ -82,7 +80,6 @@ public class MarkerHandler : MonoBehaviour
         if (isPoint1Marked && !isPoint2Marked)
         {
             point2 = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, mainCamera.nearClipPlane));
-            secondPoint = point2;
             GameObject obj = Instantiate(markerPrefab, point2, Quaternion.identity);
             markers.Add(obj);
             isPoint2Marked = true;
@@ -90,50 +87,10 @@ public class MarkerHandler : MonoBehaviour
             OnMeasurementConditionsMet?.Invoke();
         }
     }
-    public void ResetMarkPoints()
-    {
-        DestroyMarkers();
-        lineRenderer.gameObject.SetActive(false);
-        isPoint1Marked = false;
-        isPoint2Marked = false;
-        isSelected = true;
-    }
-    public void Undo()
-    {
-        if(isPoint1Marked && !isPoint2Marked)
-        {
-            ResetMarkPoints();
-        }
-        else if(isPoint1Marked && isPoint2Marked)
-        {
-            Destroy(markers[markers.Count - 1]); //last
-            lineRenderer.gameObject.SetActive(false);
-            isPoint2Marked = false;
-            isSelected = false;
-        }
-    }
-    public void Clear()
-    {
-        ResetMarkPoints();
-    }
-    void LineToolBar()
-    {
-        if((isPoint1Marked && isPoint2Marked) || (isPoint1Marked || isPoint2Marked))
-        {
-            undoBtn.interactable = true;
-            clearBtn.interactable = true;
-        }
-        else
-        {
-            undoBtn.interactable = false;
-            clearBtn.interactable = false;
-        }
-    }
     public float MeasureDistance(Vector3 p1, Vector3 p2)
     {
         return Vector3.Distance(p1, p2);
     }
-
     public void Measure()
     {
         if (isPoint1Marked && isPoint2Marked)
@@ -165,6 +122,51 @@ public class MarkerHandler : MonoBehaviour
             Destroy(markers[i]);
         }
     }
+
+    #region Measure ToolKit
+    public void ResetMarkPoints()
+    {
+        DestroyMarkers();
+        lineRenderer.gameObject.SetActive(false);
+        isPoint1Marked = false;
+        isPoint2Marked = false;
+        isSelected = true;
+    }
+    public void Undo()
+    {
+        if (isPoint1Marked && !isPoint2Marked)
+        {
+            ResetMarkPoints();
+        }
+        else if (isPoint1Marked && isPoint2Marked)
+        {
+            Destroy(markers[markers.Count - 1]); //last
+            lineRenderer.gameObject.SetActive(false);
+            isPoint2Marked = false;
+            isSelected = false;
+        }
+    }
+    public void Clear()
+    {
+        ResetMarkPoints();
+    }
+    void LineToolBar()
+    {
+        if ((isPoint1Marked && isPoint2Marked) || (isPoint1Marked || isPoint2Marked))
+        {
+            undoBtn.interactable = true;
+            clearBtn.interactable = true;
+        }
+        else
+        {
+            undoBtn.interactable = false;
+            clearBtn.interactable = false;
+        }
+    }
+    #endregion
+
+    // cm, mm, km - changing measurement
+    #region Measurements
     void PopulateDropdown()
     {
         // Get all enum values
@@ -194,7 +196,6 @@ public class MarkerHandler : MonoBehaviour
         distanceTxt.text = updatedDist + " " + currentUnit.ToString();
         Debug.Log("Updated distance: " + updatedDist);
     }
-    // cm, mm, km - changing measurement
     private float GetConversionFactor(MeasurementUnits fromUnit, MeasurementUnits toUnit)
     {
         switch (fromUnit)
@@ -251,4 +252,5 @@ public class MarkerHandler : MonoBehaviour
                 return 1f; // No conversion needed if units are the same
         }
     }
+    #endregion
 }
