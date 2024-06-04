@@ -38,7 +38,7 @@ public class UserManager : MonoBehaviour
     MarkerHandler markerHandler;
     TimeManager timeManager;
     LoadImages loadImages;
-
+    ScreenShotManager screenShotManager;
     private void Start()
     {
         dbManager = FindObjectOfType<DbManager>();
@@ -46,6 +46,7 @@ public class UserManager : MonoBehaviour
         markerHandler = FindObjectOfType<MarkerHandler>();
         timeManager = FindObjectOfType<TimeManager>();
         loadImages = FindObjectOfType<LoadImages>();
+        screenShotManager = FindObjectOfType<ScreenShotManager>();
 
         loginUI.SetActive(true);
 
@@ -87,6 +88,7 @@ public class UserManager : MonoBehaviour
                 User newUser = new User(username, password);
                 userWrapperData.users.Add(newUser);
                 dbManager.CreateUser(newUser);
+                currentUserName = username;
                 SuccessfulLogin();
                 gameManager.Notification("Sign up successful!", Color.green);
             }
@@ -176,7 +178,7 @@ public class UserManager : MonoBehaviour
         userDetails.Add(newUserDetails);
         dbManager.CreateUserData(newUserDetails);
         WriteCSV();
-        gameManager.TakeScreenShot();
+        screenShotManager.TakeScreenShot();
 
         // Uncomment below to Reset Game to Choose Image Page UI
         //gameManager.ResetToChooseImage();

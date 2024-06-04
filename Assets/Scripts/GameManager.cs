@@ -17,6 +17,8 @@ public class GameManager : MonoBehaviour
     TimeManager timeManager;
     MarkerHandler markerHandler;
     UserManager userManager;
+
+    private string screenshotsFolderPath;
     private void Start()
     {
         loadImages = FindObjectOfType<LoadImages>();
@@ -25,12 +27,6 @@ public class GameManager : MonoBehaviour
         userManager = FindObjectOfType<UserManager>();
 
         currentDifficulty = Difficulty.Easy;
-    }
-    // Take A Screenshot
-    public void TakeScreenShot()
-    {
-        ScreenCapture.CaptureScreenshot("Screenshot - " + userManager.currentUserName + " - " + timeManager.timeTaken + " - "+ markerHandler.distanceTxt.text.ToString() + ".png");
-        Notification("Screenshot Taken!", Color.green);
     }
     public void ResetToChooseImage()
     {
